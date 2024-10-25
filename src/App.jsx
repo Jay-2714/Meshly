@@ -6,10 +6,11 @@ import About from "./components/About/About";
 import ErrorPage from "./components/ErrorPage/ErrorPage";
 import Contact from "./components/Contact/Contact";
 import Header from "./components/Header/Header";
-import SignUp from "./components/SignUp/SignUp";
-import SignIn from "./components/SignIn/Signin";
 import WishList from "./components/Wishlist/WishList";
 import { useState } from "react";
+import Register from "./components/Register/register";
+import Login from "./components/Login/login";
+import { Toaster } from "react-hot-toast";
 
 const App = () => {
   const [wishlist, setWishlist] = useState([]);
@@ -36,8 +37,8 @@ const App = () => {
               />
             }
           />
-          <Route path="/sign-in" element={<SignIn />} />
-          <Route path="/sign-up" element={<SignUp />} />
+          <Route path="/register" element={<Register />} />
+          <Route path="/Login" element={<Login />} />
           <Route
             path="/wishlist"
             element={
@@ -49,6 +50,7 @@ const App = () => {
           <Route path="*" element={<ErrorPage />} />
         </Routes>
       </BrowserRouter>
+      <Toaster position="top-center" toastOptions={{duration:2500}}/>
     </>
   );
 };

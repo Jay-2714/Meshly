@@ -8,8 +8,8 @@ const Header = () => {
     { label:"WishList" ,Path:"/wishlist"},
     { label: "About", Path: "/about" },
     { label: "Contact", Path: "/contact" },
-    { label: "SignIn", Path: "/sign-in" },
-    { label: "SignUp", Path: "/sign-up" },
+    { label: "Register", Path: "/Register" },
+    { label: "Login", Path: "/Login" },
   ];
   const [showMobileSidebar, setShowMobileSidebar] = useState(true);
   const handleItemClick = () => {

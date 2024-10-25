@@ -103,7 +103,7 @@ const ModelViewer = ({ item, addToWishlist, removeFromWishlist, wishlist }) => {
         src={item.modelSrc}
         ios-src={item.iOSSrc}
         alt="A 3D model"
-        ar
+        ar-
         ar-modes="webxr scene-viewer quick-look"
         camera-controls
         auto-rotate
