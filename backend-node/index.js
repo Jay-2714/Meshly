@@ -1,69 +1,145 @@
 const express = require('express');
+const { MongoClient, ServerApiVersion } = require('mongodb');
+const axios = require('axios');
 const fs = require('fs');
+const path = require('path');
+const promClient = require('prom-client'); // Prometheus client for monitoring
+
 const app = express();
-const PORT = 3000;
+const PORT = 3500;
+
 app.use(express.json());
 
-
-let products = JSON.parse(fs.readFileSync('product.json', 'utf-8'));
-
-
-app.get('/api/products', (req, res) => {
-  res.json(products);
-});
-
-
-app.get('/api/products/:id', (req, res) => {
-  const productId = parseInt(req.params.id);
-  const product = products.find((p) => p.id === productId);
-  if (product) {
-    res.json(product);
-  } else {
-    res.status(404).json({ message: 'Product not found' });
+// MongoDB Connection
+const uri = "mongodb+srv://jaysanjaymhatre2714:987654321@cluster0.ls7lh.mongodb.net/?appName=Cluster0";
+const client = new MongoClient(uri, {
+  serverApi: {
+    version: ServerApiVersion.v1,
+    strict: true,
+    deprecationErrors: true,
   }
 });
 
+let productsCollection;
 
-app.post('/api/products', (req, res) => {
-  const newProduct = req.body;
-  newProduct.id = products.length ? products[products.length - 1].id + 1 : 1;
-  products.push(newProduct);
+async function connectToDatabase() {
+  try {
+    await client.connect();
+    productsCollection = client.db("meshly").collection("products");
+    console.log("✅ Connected to MongoDB");
+  } catch (error) {
+    console.error("❌ Error connecting to MongoDB:", error);
+  }
+}
+connectToDatabase();
 
+// Prometheus Metrics
+const httpRequestDuration = new promClient.Histogram({
+  name: 'http_request_duration_seconds',
+  help: 'Duration of HTTP requests in seconds',
+  labelNames: ['method', 'route', 'status_code'],
+  buckets: [0.01, 0.05, 0.1, 0.5, 1, 2, 5] 
+});
+promClient.collectDefaultMetrics();
 
-  fs.writeFileSync('product.json', JSON.stringify(products, null, 2));
-  res.status(201).json(newProduct);
+app.use((req, res, next) => {
+  const start = process.hrtime();
+  res.on('finish', () => {
+    const duration = process.hrtime(start);
+    const seconds = duration[0] + duration[1] / 1e9;
+    httpRequestDuration.labels(req.method, req.path, res.statusCode).observe(seconds);
+  });
+  next();
 });
 
-
-app.put('/api/products/:id', (req, res) => {
-  const productId = parseInt(req.params.id);
-  const index = products.findIndex((p) => p.id === productId);
-
-  if (index !== -1) {
-    products[index] = {...products[index], ...req.body, id: productId };
-
-    fs.writeFileSync('product.json', JSON.stringify(products, null, 2));
-    res.json(products[index]);
-  } else {
-    res.status(404).json({ message: 'Product not found' });
+// API Endpoints
+app.get('/api/products', async (req, res) => {
+  try {
+    const products = await productsCollection.find().toArray();
+    res.json(products);
+  } catch (error) {
+    res.status(500).json({ message: 'Error fetching products', error });
   }
 });
 
-
-app.delete('/api/products/:id', (req, res) => {
+app.get('/api/products/:id', async (req, res) => {
   const productId = parseInt(req.params.id);
-  const index = products.findIndex((p) => p.id === productId);
-
-  if (index !== -1) {
-    const deletedProduct = products.splice(index, 1)[0];
-    fs.writeFileSync('product.json', JSON.stringify(products, null, 2));
-    res.json(deletedProduct);
-  } else {
-    res.status(404).json({ message: 'Product not found' });
+  try {
+    const product = await productsCollection.findOne({ id: productId });
+    if (product) res.json(product);
+    else res.status(404).json({ message: 'Product not found' });
+  } catch (error) {
+    res.status(500).json({ message: 'Error fetching product', error });
   }
 });
 
+app.post('/api/products', async (req, res) => {
+  try {
+    const newProduct = req.body;
+    const lastProduct = await productsCollection.find().sort({ id: -1 }).limit(1).toArray();
+    newProduct.id = lastProduct.length ? lastProduct[0].id + 1 : 1;
+    await productsCollection.insertOne(newProduct);
+    res.status(201).json(newProduct);
+  } catch (error) {
+    res.status(500).json({ message: 'Error adding product', error });
+  }
+});
 
-app.listen(PORT, () => {
-  console.log(`Server is running on http://localhost:${PORT}`);
+app.put('/api/products/:id', async (req, res) => {
+  const productId = parseInt(req.params.id);
+  try {
+    const result = await productsCollection.updateOne({ id: productId }, { $set: req.body });
+    if (result.matchedCount > 0) {
+      const updatedProduct = await productsCollection.findOne({ id: productId });
+      res.json(updatedProduct);
+    } else {
+      res.status(404).json({ message: 'Product not found' });
+    }
+  } catch (error) {
+    res.status(500).json({ message: 'Error updating product', error });
+  }
+});
+
+app.delete('/api/products/:id', async (req, res) => {
+  const productId = parseInt(req.params.id);
+  try {
+    const result = await productsCollection.deleteOne({ id: productId });
+    if (result.deletedCount > 0) res.json({ message: 'Product deleted' });
+    else res.status(404).json({ message: 'Product not found' });
+  } catch (error) {
+    res.status(500).json({ message: 'Error deleting product', error });
+  }
+});
+
+// Prometheus Metrics Endpoint
+app.get('/metrics', async (req, res) => {
+  res.set('Content-Type', promClient.register.contentType);
+  res.end(await promClient.register.metrics());
+});
+
+// Call Post Method to Seed Data
+async function callPostMethod() {
+  try {
+    const productsFilePath = path.join(__dirname, 'products.json');
+    if (!fs.existsSync(productsFilePath)) {
+      console.log("⚠️ products.json file not found");
+      return;
+    }
+
+    const productsData = fs.readFileSync(productsFilePath, 'utf8');
+    const products = JSON.parse(productsData);
+
+    for (const product of products) {
+      const response = await axios.post(`http://localhost:${PORT}/api/products`, product);
+      console.log('✅ Product added:', response.data);
+    }
+  } catch (error) {
+    console.error('❌ Error adding products:', error);
+  }
+}
+
+// Start Server
+app.listen(PORT, async () => {
+  console.log(`🚀 Server running at http://localhost:${PORT}`);
+
 });

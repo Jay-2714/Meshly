@@ -7,10 +7,11 @@ import ErrorPage from "./components/ErrorPage/ErrorPage";
 import Contact from "./components/Contact/Contact";
 import Header from "./components/Header/Header";
 import WishList from "./components/Wishlist/WishList";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Register from "./components/Register/register";
 import Login from "./components/Login/login";
 import { Toaster } from "react-hot-toast";
+
 
 const App = () => {
   const [wishlist, setWishlist] = useState([]);
