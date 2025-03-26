@@ -11,6 +11,7 @@
     "express": "^4.17.1",
     "faker": "^5.1.0",
     "jsonwebtoken": "^8.5.1",
+    "mongodb": "^6.15.0",
     "prom-client": "^15.1.3"
   }
 }

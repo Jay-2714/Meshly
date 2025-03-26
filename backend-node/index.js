@@ -4,9 +4,10 @@ const axios = require('axios');
 const fs = require('fs');
 const path = require('path');
 const promClient = require('prom-client'); // Prometheus client for monitoring
+const { log } = require('console');
 
 const app = express();
-const PORT = 3500;
+const PORT = 4500;
 
 app.use(express.json());
 
@@ -113,8 +114,15 @@ app.delete('/api/products/:id', async (req, res) => {
 
 // Prometheus Metrics Endpoint
 app.get('/metrics', async (req, res) => {
+  console.log('⚡ /metrics endpoint hit');
+  try {
   res.set('Content-Type', promClient.register.contentType);
   res.end(await promClient.register.metrics());
+  console.log('Metrics fetched');
+}
+catch (error) {
+  console.error('❌ Error fetching metrics:', error);
+}
 });
 
 // Call Post Method to Seed Data
@@ -139,7 +147,8 @@ async function callPostMethod() {
 }
 
 // Start Server
-app.listen(PORT, async () => {
+app.listen(PORT, '0.0.0.0', async () => {
   console.log(`🚀 Server running at http://localhost:${PORT}`);
-
+  callPostMethod();
 });
+
