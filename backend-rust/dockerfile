@@ -1,0 +1,38 @@
+# Use Rust official image to build the project
+FROM rust:1.81 AS builder
+
+# Set the working directory inside the container
+WORKDIR /usr/src/app
+
+# Copy Cargo files separately to leverage Docker caching
+COPY Cargo.toml Cargo.lock ./
+
+# Create a dummy main.rs to allow dependency caching
+RUN mkdir src && echo 'fn main() {}' > src/main.rs
+
+# Fetch dependencies
+RUN cargo build --release || true
+
+# Copy the actual source code
+COPY . .
+
+# Build the Rust application
+RUN cargo build --release
+
+# ✅ Use Debian Bookworm instead of Ubuntu
+FROM debian:bookworm-slim
+
+# Set working directory
+WORKDIR /app
+
+# Install required runtime dependencies
+RUN apt update && apt install -y libgcc-s1
+
+# Copy only the compiled binary from the builder stage
+COPY --from=builder /usr/src/app/target/release/backend-rust /app/backend-rust
+
+# Expose the Rust application's port
+EXPOSE 5000
+
+# Run the Rust application
+CMD ["/app/backend-rust"]

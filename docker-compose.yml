@@ -1,16 +1,21 @@
-version: '3.8'
-
 services:
-  app:
-    build: .
-    container_name: backend_app
+  backend-node:
+    build: ./backend-node
+    container_name: backend_node
     ports:
       - "4500:4500"
     environment:
       - NODE_ENV=production
-    command: ["node", "index.js"]
     networks:
-      - nodejs
+      - meshly_network
+
+  backend-rust:
+    build: ./backend-rust
+    container_name: backend_rust
+    ports:
+      - "5000:5000"
+    networks:
+      - meshly_network
 
   prometheus:
     image: prom/prometheus:latest
@@ -20,11 +25,12 @@ services:
     volumes:
       - ./prometheus.yml:/etc/prometheus/prometheus.yml
     depends_on:
-      - app
+      - backend-node
+      - backend-rust
     command:
       - "--config.file=/etc/prometheus/prometheus.yml"
     networks:
-      - nodejs
+      - meshly_network
 
   grafana:
     image: grafana/grafana:latest
@@ -39,10 +45,10 @@ services:
       - GF_SECURITY_ADMIN_USER=admin
       - GF_SECURITY_ADMIN_PASSWORD=admin
     networks:
-      - nodejs
+      - meshly_network
 
 networks:
-  nodejs:
+  meshly_network:
     driver: bridge
 
 volumes:

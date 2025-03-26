@@ -165,7 +165,7 @@ const ModelViewer = ({ item, addToWishlist, removeFromWishlist, wishlist }) => {
         
       <LazyLoad>
         <div className="qr-sec">
-          {!ARSupported && (
+          {/* {!ARSupported && (
             <QRCode
               id={item.name}
               value={window.location.href}
@@ -175,7 +175,7 @@ const ModelViewer = ({ item, addToWishlist, removeFromWishlist, wishlist }) => {
               level="H"
               includeMargin
             />
-          )}
+          )} */}
 
           <div className="product-details">
             <div>
@@ -191,7 +191,7 @@ const ModelViewer = ({ item, addToWishlist, removeFromWishlist, wishlist }) => {
                 </div>
               </div>
               <div>Rs. 1000</div>
-              {!ARSupported && <h5>Scan the QR code for AR View on mobile</h5>}
+            
             </div>
             <button className="add-icon" onClick={handleAddToWishlist}>
               {isInWishlist ? '-' : '+'}

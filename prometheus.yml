@@ -1,0 +1,11 @@
+global:
+  scrape_interval: 15s
+
+scrape_configs:
+  - job_name: 'node-app'
+    static_configs:
+      - targets: ['backend_node:4500']
+
+  - job_name: 'rust-app'
+    static_configs:
+      - targets: ['backend_rust:5000']
