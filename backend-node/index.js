@@ -12,7 +12,7 @@ const PORT = 4500;
 app.use(express.json());
 
 // MongoDB Connection
-const uri = "mongodb+srv://jaysanjaymhatre2714:987654321@cluster0.ls7lh.mongodb.net/?appName=Cluster0";
+const uri = "mongodb+srv://jaysanjaymhatre2714:987654321@cluster0.ls7lh.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0";
 const client = new MongoClient(uri, {
   serverApi: {
     version: ServerApiVersion.v1,
@@ -112,7 +112,7 @@ app.delete('/api/products/:id', async (req, res) => {
   }
 });
 
-// Prometheus Metrics Endpoint
+
 app.get('/metrics', async (req, res) => {
   console.log('⚡ /metrics endpoint hit');
   try {
@@ -142,6 +142,7 @@ async function callPostMethod() {
       console.log('✅ Product added:', response.data);
     }
   } catch (error) {
+
     console.error('❌ Error adding products:', error);
   }
 }

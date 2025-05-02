@@ -19,6 +19,34 @@ const WishList = ({wishlist,onRemoveItem}) => {
   const handleRemoveItem = (id) => {
     onRemoveItem(id);
   };
+
+  const handleDownload = (item) => {
+    const modelFilePath = `/models/${item.modelSrc}`;
+  
+    fetch(modelFilePath)
+      .then(response => {
+        if (!response.ok) {
+          throw new Error("File not found");
+        }
+        return response.blob();
+      })
+      .then(blob => {
+        const url = window.URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.href = url;
+        link.download = `${item.name || "model"}.glb`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        window.URL.revokeObjectURL(url);
+      })
+      .catch(error => {
+        console.error("Download failed:", error);
+        alert("Failed to download the file. Please check the file path or server.");
+      });
+  };
+  
+
   const FilledWishList = () => {
     return (
       <div className="wishlist-items">
@@ -29,9 +57,14 @@ const WishList = ({wishlist,onRemoveItem}) => {
               <div className="wishlist-category">Category: {item.category}</div>
               <div className="wishlist-color">Color: {item.color}</div>
             </div>
-            <button onClick={() => handleRemoveItem(item.id)} className="remove-btn">
+
+            <button onClick={() => handleDownload(item)} className="remove-btn">
+  Download
+</button>
+<button onClick={() => handleRemoveItem(item.id)} className="remove-btn">
               Remove
             </button>
+
           </div>
         ))}
       </div>

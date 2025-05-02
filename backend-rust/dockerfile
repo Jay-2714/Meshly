@@ -1,38 +1,29 @@
-# Use Rust official image to build the project
-FROM rust:1.81 AS builder
+# Use a more recent Rust image as the base image
+FROM rust:latest as builder
 
-# Set the working directory inside the container
-WORKDIR /usr/src/app
-
-# Copy Cargo files separately to leverage Docker caching
-COPY Cargo.toml Cargo.lock ./
-
-# Create a dummy main.rs to allow dependency caching
-RUN mkdir src && echo 'fn main() {}' > src/main.rs
-
-# Fetch dependencies
-RUN cargo build --release || true
-
-# Copy the actual source code
-COPY . .
-
-# Build the Rust application
-RUN cargo build --release
-
-# ✅ Use Debian Bookworm instead of Ubuntu
-FROM debian:bookworm-slim
-
-# Set working directory
+# Set the working directory
 WORKDIR /app
 
-# Install required runtime dependencies
-RUN apt update && apt install -y libgcc-s1
+# Copy the entire project
+COPY . .
 
-# Copy only the compiled binary from the builder stage
-COPY --from=builder /usr/src/app/target/release/backend-rust /app/backend-rust
+# Build the project
+RUN cargo build --release
 
-# Expose the Rust application's port
+# Use a smaller image for runtime
+FROM debian:bookworm-slim
+
+# Install required dependencies
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends ca-certificates && \
+    rm -rf /var/lib/apt/lists/*
+
+# Copy the binary from the builder stage
+COPY --from=builder /app/target/release/backend-rust /usr/local/bin/
+COPY --from=builder /app/products.json .
+
+# Set the entrypoint
+ENTRYPOINT ["/usr/local/bin/backend-rust"]
+
+# Expose the port
 EXPOSE 5000
-
-# Run the Rust application
-CMD ["/app/backend-rust"]

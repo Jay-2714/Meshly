@@ -46,8 +46,8 @@ const App = () => {
               <WishList wishlist={wishlist} onRemoveItem={handleRemoveItem} />
             }
           />
-          <Route path="/about" element={<About />} />
-          <Route path="/contact" element={<Contact />} />
+          {/* <Route path="/about" element={<About />} />
+          <Route path="/contact" element={<Contact />} /> */}
           <Route path="*" element={<ErrorPage />} />
         </Routes>
       </BrowserRouter>
