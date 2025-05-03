@@ -10,7 +10,7 @@ export let options = {
 export default function () {
 
 
-  const res_node = http.get('http://backend_node:4500/api/products', {
+  const res_node = http.get('http://backend_node:4500/metrics', {
     tags: { service: 'node' },
   });
 
@@ -20,7 +20,7 @@ export default function () {
 
   sleep(1);
 
-  const res_rust = http.get('http://backend_rust:5000/api/products', {
+  const res_rust = http.get('http://backend_rust:5000/metrics', {
 
     tags: { service: 'rust' },
   });
