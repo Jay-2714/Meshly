@@ -124,13 +124,10 @@ const NavBar: React.FC = () => {
           opacity: 0,
           transformOrigin: "left center",
         }}
-        animate={
-           {
-                scaleX: 1,
-                opacity: 1,
-              }
-      
-        }
+        animate={{
+          scaleX: 1,
+          opacity: 1,
+        }}
         transition={{
           duration: 0.8,
           ease: [0.25, 0.46, 0.45, 0.94], // Custom cubic-bezier for smooth roll
@@ -177,44 +174,23 @@ const NavBar: React.FC = () => {
             isMobile && !isMenuOpen ? "hidden" : "flex"
           }`}
         >
-          {visibleNavItems.map((item) => (
+          {visibleNavItems.map((item, idx) => (
             <li key={item.name} className="w-full md:w-auto">
               <motion.button
                 initial={{
-                  x: viewport.width + 1000, // Use viewport state instead of window.innerWidth
-                  y: 500,
-                  scale: 0.6,
-                  rotate: -360,
+                  scale: 0,
+
+                  opacity: 0,
                 }}
                 animate={{
-                  // X creates the C-shape horizontally - using relative positioning
-                  x: [
-                    viewport.width + 1000, // 1. Start outside right
-                    viewport.width * 0.3, // 2. Come to middle-right
-                    -viewport.width * 1.9, // 3. EXTREME LEFT (80% of screen width to the left)
-                    -viewport.width * 2.8,
-                    -viewport.width * 2.9, // 4. Start curving back from extreme left
-                    0, // 5. Final position (relative to navbar)
-                  ],
-                  // Y creates the vertical C-curve
-                  y: [
-                    500, // 1. Start high
-                    600, // 2. Drop while moving left
-                    550, // 3. Bottom of C-curve (lowest point)
-                    350, // 4. Curve back up
-                    150,
-                    0, // 5. Final navbar position
-                  ],
-                  scale: [0.6, 0.6, 1.1, 1.05, 1,1],
+                  scale: 1,
+                  opacity: 1,
                 }}
                 transition={{
-                  duration: 2.5,
-                  type:"keyframes",
-                  ease:"linear", // Custom easing for smooth curve
-                  // times: [0, 0.5, 1, 1.5,2.0, 2.5], // Control timing of each keyframe
-                  delay:
-                    visibleNavItems.findIndex((el) => el.name === item.name) *
-                    0.03,
+                  duration: 0.3,
+                  type: "spring",
+                  ease: "easeInOut",
+                  delay: 1 + idx * 0.07,
                 }}
                 className={`relative px-6 py-3 rounded-xl z-1 text-white hover:scale-110 font-bold text-lg transition-all duration-200 transform active:scale-90 focus:scale-100 ease-in-out group w-full md:w-auto ${
                   selectedItem === item.name
@@ -230,7 +206,16 @@ const NavBar: React.FC = () => {
                 }}
                 onClick={() => handleItemClick(item)}
               >
-                <span className="relative z-10">{item.name}</span>
+                <motion.span
+                  className="relative z-10"
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{
+                    delay: 1 + idx * 0.07 + 0.3, // 0.5s after button
+                  }}
+                >
+                  {item.name}
+                </motion.span>
                 {selectedItem !== item.name && (
                   <span
                     className="absolute inset-0 transform scale-x-0"
