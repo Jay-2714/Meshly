@@ -1,5 +1,4 @@
 'use client'
-import Link from 'next/link';
 import { FaFacebook, FaInstagram, FaLinkedin } from 'react-icons/fa';
 import { FloatingDock } from './ui/floating-dock';
 import { FaXTwitter } from 'react-icons/fa6';
@@ -34,12 +33,12 @@ const socialLinks: SocialLink[] = [
   }
 ];
 
-const navLinks = [
-  { title: 'Home', href: '/' },
-  { title: 'About', href: '/about' },
-  { title: 'Services', href: '/services' },
-  { title: 'Contact', href: '/contact' },
-];
+// const navLinks = [
+//   { title: 'Home', href: '/' },
+//   { title: 'About', href: '/about' },
+//   { title: 'Services', href: '/services' },
+//   { title: 'Contact', href: '/contact' },
+// ];
 
 export function Footer() {
   return (
@@ -58,10 +57,10 @@ export function Footer() {
         ease: [0.25, 0.46, 0.45, 0.94],
         type: "tween",
       }}
-      className="flex flex-row absolute bottom-0 w-full bg-blueColor text-white py-6 "
+      className="flex flex-row absolute bottom-0 w-full bg-blueColor text-white py-6 align-center justify-center"
     >
       <div className="container mx-auto px-4 flex flex-row justify-evenly items-center">
-        <div className="flex w-1/3 mb-4 md:mb-0">
+        {/* <div className="flex w-1/3 mb-4 md:mb-0">
           <ul className="flex flex-col px-4">
             {navLinks.map(link => (
               <motion.li
@@ -92,18 +91,14 @@ export function Footer() {
               </motion.li>
             ))}
           </ul>
-        </div>
+        </div> */}
         <div className="flex w-1/3 space-x-4 text-xl justify-center">
           <FloatingDock 
         
            items={socialLinks} mobileClassName="invisible" desktopClassName='flex flex-row bg-blueColor text-blueColor' />
            
         </div>
-        <div className="flex w-1/3 mt-4 md:mt-0 justify-end">
-          <p className="text-sm text-white">
-            &copy; {new Date().getFullYear()} 3dverse. All rights reserved.
-          </p>
-        </div>
+ 
       </div>
     </motion.footer>
   );

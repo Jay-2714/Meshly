@@ -1,3 +1,4 @@
+@import url('/fonts/fonts.css');
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -17,6 +18,26 @@
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3), inset 0 -4px 4px rgba(0, 0, 0, 0.4), inset 0 4px 4px rgba(255, 255, 255, 0.7);
 
   }
+    ._3dtext {
+    position: relative;
+    border-radius: 0.75rem;
+    width: 100%;
+    text-shadow: 0 4px 6px rgba(0, 0, 0, 0.3), inset 0 -4px 4px rgba(0, 0, 0, 0.4), inset 0 4px 4px rgba(255, 255, 255, 0.7);
+      color: transparent;
+  -webkit-background-clip: text;
+  -moz-background-clip: text;
+  background-clip: text;
+}
+   /* background-color: #565656;
+  font: bold 48px 'Futura';
+  color: transparent;
+  text-shadow: 0px 2px 3px rgba(255, 255, 255, 0.8);
+  -webkit-background-clip: text;
+  -moz-background-clip: text;
+  background-clip: text;
+} */
+
+  
   @media (min-width: 768px) {
     ._3d {
       width: auto;
@@ -33,6 +54,12 @@
     transform: scale(1.00);
     box-shadow: 0 2px 0px rgba(0, 0, 0, 0.01), inset 0 -4px 2px rgba(0, 0, 0, 0.02), inset 0 4px 4px rgba(255, 255, 255, 0.2);
   }
+}
+@font-face {
+  font-family: 'OrangeGummy';
+  src: url('/fonts/OrangeGummy-aYJwJ.otf') format('opentype');
+  font-weight: normal;
+  font-style: normal;
 }
 
 
@@ -102,6 +129,9 @@
   }
   body {
     @apply bg-background text-foreground;
+  }
+  ._orangegummy {
+    font-family: 'OrangeGummy', sans-serif;
   }
 }
 

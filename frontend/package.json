@@ -21,6 +21,7 @@
     "@reduxjs/toolkit": "^2.8.2",
     "@tabler/icons-react": "^3.34.0",
     "@types/react-redux": "^7.1.34",
+    "better-auth": "^1.2.12",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "lucide-react": "^0.518.0",
