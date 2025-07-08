@@ -1,0 +1,15 @@
+@font-face {
+  font-family: 'OrangeGummy';
+  src: url('/fonts/OrangeGummy-aYJwJ.otf') format('opentype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Dosis';
+  src: url('/fonts/Dosis-ExtraBold.ttf') format('truetype');
+  font-weight: bolder;
+  font-style: normal;
+}
+
+
