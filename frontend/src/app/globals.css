@@ -43,9 +43,7 @@
       width: auto;
     }
   }
-  ._3d:hover {
-    transform: scale(1.1);
-  }
+
   ._3d:active {
     transform: scale(0.9);
   }
