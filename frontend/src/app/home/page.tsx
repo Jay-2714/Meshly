@@ -1,3 +1,4 @@
+import HeroPage from "@/components/HeroPage";
 import HeroContent from "@/components/HeroText";
 import { AnimatePresence } from "motion/react";
 import React from "react";
@@ -11,7 +12,8 @@ function Home() {
             <HeroContent />
       
       </div>
-      <div className="flex h-1/3">
+      <div className="flex h-full w-1/2">
+      <HeroPage />
       </div>
       <div className="flex h-1/3"></div>
 
